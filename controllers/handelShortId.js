@@ -1,10 +1,15 @@
 const URL = require("../models/url");
+const IP = require("ip");
 
 async function handelShortId(req, res) {
   const id = req.params.id;
-  console.log("id", id);
-  const reURL = await URL.findOne({ uniqueId: id }, { rediredctURL: 1 });
-  console.log(reURL);
+  if (id === "favicon.ico") {
+    return;
+  }
+  const reURL = await URL.findOneAndUpdate(
+    { uniqueId: id },
+    { $push: { vistHistory: { time: Date.now(), ip: IP.address() } } }
+  );
   return res.redirect(reURL.rediredctURL);
 }
 
