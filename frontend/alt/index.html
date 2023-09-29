@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Details</title>
+    <style>
+      /* Reset some default styles */
+      body,
+      h1,
+      p {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        display: flex;
+        justify-content: center;
+        height: 100vh;
+      }
+
+      .container {
+        text-align: center;
+        justify-content: center;
+        padding: 20px;
+        margin: 20px 0;
+        width: 95vw;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      h1 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-size: 16px;
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      input[type="text"] {
+        width: 80%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+
+      button {
+        background-color: #0096db;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0070a8;
+      }
+
+      /* Styles for the result table */
+      #tableContainer {
+        text-align: center;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .result {
+        width: 95vw;
+        border-collapse: collapse;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+      }
+
+      .result th,
+      .result td {
+        justify-content: center;
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #ccc;
+      }
+
+      .result th {
+        background-color: #f5f5f5;
+      }
+
+      /* Styles for table body rows */
+      #table-body tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      #table-body tr:nth-child(odd) {
+        background-color: #ffffff;
+      }
+
+      /* Styles for table cell content */
+      #table-body td {
+        font-size: 16px;
+        color: #333;
+      }
+
+      @media screen and (min-width: 680px) {
+        .container {
+          width: 45vw;
+        }
+        input[type="text"] {
+          width: 65%;
+        }
+        #tableContainer .result {
+          width: 45vw;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="outerContainer">
+      <div class="container">
+        <h1>URL Details</h1>
+        <form id="fetch-form">
+          <label for="short-id">Enter Short ID:</label>
+          <input type="text" id="short-id" placeholder="Short ID" />
+          <button type="submit">Fetch Details</button>
+        </form>
+      </div>
+      <div id="tableContainer" style="display: none">
+        <table class="result">
+          <thead>
+            <tr>
+              <th>Date and Time:</th>
+              <th>IP Address:</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr>
+              <td>${dateTime.toLocaleString()}</td>
+              <td>${each.ip}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById("fetch-form");
+      const tableContainer = document.getElementById("tableContainer");
+      const tableBody = document.getElementById("table-body");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const shortId = document.getElementById("short-id").value;
+
+        // Perform your API request to fetch data based on the short ID here
+        // Replace this with your actual API call
+        const response = await fetch(`/${shortId}/alt`);
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          const table = data.vistHistory.map((each) => {
+            const dateTime = new Date(each.time);
+            return `<tr>
+                <td>${dateTime.toLocaleString()} </td>
+                <td>${each.ip}</td>
+              </tr>`;
+          });
+          tableBody.innerHTML = table.join("");
+          tableContainer.style.display = "flex";
+        } else {
+          alert("Error occurred. Short ID not found.");
+        }
+      });
+    </script>
+  </body>
+</html>
